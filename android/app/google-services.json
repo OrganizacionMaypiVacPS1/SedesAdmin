@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "625724453137",
+    "project_id": "flutter-test-d1cb6",
+    "storage_bucket": "flutter-test-d1cb6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:625724453137:android:c0f9e163e3d101c0c45cb0",
+        "android_client_info": {
+          "package_name": "com.example.admin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "625724453137-kv388549ot50kkj8lpnusnnfvqshihnc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGQnci5z1oh-hPiko4z3on291KFb1X1-c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "625724453137-kv388549ot50kkj8lpnusnnfvqshihnc.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "625724453137-md6bnjaakqufea662ihchhk7j1pefghb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.sedes.crudFirebase"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:625724453137:android:9ed0db6691e0135ac45cb0",
+        "android_client_info": {
+          "package_name": "com.sedes.crud_firebase"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "625724453137-kv388549ot50kkj8lpnusnnfvqshihnc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGQnci5z1oh-hPiko4z3on291KFb1X1-c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "625724453137-kv388549ot50kkj8lpnusnnfvqshihnc.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "625724453137-md6bnjaakqufea662ihchhk7j1pefghb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.sedes.crudFirebase"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
