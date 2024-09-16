@@ -11,7 +11,7 @@
 import 'package:admin/Implementation/CampaignImplementation.dart';
 import 'package:admin/Models/CampaignModel.dart';
 import 'package:admin/presentation/screens/Login.dart';
-import 'package:admin/services/Config.dart';
+import 'package:admin/Config/Config.dart';
 import 'package:admin/services/global_notification.dart';
 import 'package:admin/services/notification_services.dart';
 import 'package:admin/services/services_firebase.dart';

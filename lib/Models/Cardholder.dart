@@ -11,9 +11,9 @@ class Carnetizador {
 }
 
 final List<Carnetizador> cardholders = [
-  Carnetizador(id: 3, id_Jefe_Brigada: 4),
+  /*Carnetizador(id: 3, id_Jefe_Brigada: 4),
   Carnetizador(id: 5, id_Jefe_Brigada: 4),
-  Carnetizador(id: 6, id_Jefe_Brigada: 4),
+  Carnetizador(id: 6, id_Jefe_Brigada: 4),*/
 ];
 
 

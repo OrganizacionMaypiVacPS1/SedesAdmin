@@ -234,105 +234,106 @@ Future<File> _downloadImage(String imageUrl) async {
                 decoration: BoxDecoration(
                   color: Color.fromRGBO(77, 101, 150, 1),
                 ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    LayoutBuilder(
-                        builder: (context, constraints) {
-                          double avatarRadius = constraints.maxWidth * 0.15;
-                          
-                          return imageProfile != null
-                            ? InkWell(
-                              onTap: () {
-                                Navigator.of(context).pop();
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => RegisterBossPage(
-                                      isUpdate: true,
-                                      userData: miembroActual,
-                                    )),
-                                );
-                              },
-                              child: Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  CircleAvatar(
-                                    backgroundImage: isloadingProfile?null: FileImage(imageProfile!),
-                                    radius: avatarRadius,
-                                  ),
-                                  if (isloadingProfile)
-                                    SizedBox(
-                                      width: 60, 
-                                      height: 60, 
-                                      child: SpinKitCircle(
-                                        color: Colors.white,
-                                      ),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      LayoutBuilder(
+                          builder: (context, constraints) {
+                            double avatarRadius = constraints.maxWidth * 0.15;
+
+                            return imageProfile != null
+                              ? InkWell(
+                                onTap: () {
+                                  Navigator.of(context).pop();
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => RegisterBossPage(
+                                        isUpdate: true,
+                                        userData: miembroActual,
+                                      )),
+                                  );
+                                },
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    CircleAvatar(
+                                      backgroundImage: isloadingProfile?null: FileImage(imageProfile!),
+                                      radius: avatarRadius,
                                     ),
-                                ],
-                              ),
-                            )
-                            : InkWell(
-                              onTap: () {
-                                Navigator.of(context).pop();
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => RegisterBossPage(
-                                      isUpdate: true,
-                                      userData: miembroActual,
-                                    )),
-                                );
-                              },
-                              child: Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                   CircleAvatar(
-                                    backgroundImage: isloadingProfile?null: AssetImage('assets/usuario.png'),
-                                    radius: avatarRadius,
-                                  ),
-                                  if (isloadingProfile)
-                                    SizedBox(
-                                      width: 60, 
-                                      height: 60, 
-                                      child: SpinKitCircle(
-                                        color: Colors.white,
+                                    if (isloadingProfile)
+                                      SizedBox(
+                                        width: 60,
+                                        height: 60,
+                                        child: SpinKitCircle(
+                                          color: Colors.white,
+                                        ),
                                       ),
+                                  ],
+                                ),
+                              )
+                              : InkWell(
+                                onTap: () {
+                                  Navigator.of(context).pop();
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => RegisterBossPage(
+                                        isUpdate: true,
+                                        userData: miembroActual,
+                                      )),
+                                  );
+                                },
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                     CircleAvatar(
+                                      backgroundImage: isloadingProfile?null: AssetImage('assets/usuario.png'),
+                                      radius: avatarRadius,
                                     ),
-                                ],
-                              ),
-                            );
-                        },
-                      ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(height: 10),
-                        Column(
-                          children: [
-                            Text(
-                              miembroActual!.names,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(height: 5),
-                            Text(
-                              miembroActual!.correo,
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 14,
-                              ),
-                            ),
-                          ],
+                                    if (isloadingProfile)
+                                      SizedBox(
+                                        width: 60,
+                                        height: 60,
+                                        child: SpinKitCircle(
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              );
+                          },
                         ),
-                      ],
-                    ),
-                  ],
-                )),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(height: 10),
+                          Column(
+                            children: [
+                              Text(
+                                miembroActual!.names,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              //SizedBox(height: 5),
+                              Text(
+                                miembroActual!.correo,
+                                style: TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ))),
             ListTile(
               leading: Icon(Icons.campaign),
               title: Text('Registrar Actividad'),
@@ -466,7 +467,7 @@ Future<File> _downloadImage(String imageUrl) async {
                   chats.clear();
                   namesChats.clear();
                   imageProfile = null;
-                  miembroActual = null;
+                  miembroActual = miembroActual!;
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => LoginPage()),

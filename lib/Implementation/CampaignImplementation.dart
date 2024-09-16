@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:admin/services/Config.dart';
+import 'package:admin/Config/Config.dart';
 import 'package:admin/services/services_firebase.dart';
 import 'package:admin/Models/CampaignModel.dart';
 import 'package:flutter/material.dart';

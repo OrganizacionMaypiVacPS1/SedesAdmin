@@ -4,7 +4,7 @@ import 'package:admin/Models/ConversationModel.dart';
 import 'package:admin/Models/Profile.dart';
 import 'package:admin/presentation/screens/Campaign.dart';
 import 'package:admin/presentation/screens/ChatPage.dart';
-import 'package:admin/services/Config.dart';
+import 'package:admin/Config/Config.dart';
 import 'package:admin/services/connectivity_service.dart';
 import 'package:admin/services/services_firebase.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -513,101 +513,121 @@ class EstadoList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemCount: chats.length,
+      itemCount: chats.length, // Ensure this matches the length of chats and namesChats
       itemBuilder: (context, index) {
-        return chats[index].idPerson==null&&namesChats[index]["mensaje"]!=""? Card(
-          margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-          elevation: 5,
-          child: InkWell(
-            onTap: () async {
-              print('idPersonDestino:'+chats[index].idPersonDestino.toString());
-              File imageFile = await getImageFileFromAssets('assets/usuario.png');
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ChatPage(idChat: chats[index].idChats, nombreChat: namesChats[index]["Nombres"],idPersonDestino: chats[index].idPersonDestino,imageChat: 
-                selectedImages[chats[index].idChats]==null?imageFile:selectedImages[chats[index].idChats])),//////////////
-              );
-            },
-            onLongPress: () async {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Text('Eliminar chat?'),
-                    content: Icon(Icons.warning, color: Colors.red, size: 50),
-                    actions: <Widget>[
-                      TextButton(
-                        child: Text('Cancelar', style: TextStyle(color: Colors.black)),
-                        onPressed: () {
-                          Navigator.of(context).pop(0); 
-                        },
-                      ),
-                      TextButton(
-                        child: Text('Eliminar', style: TextStyle(color: Colors.red)),
-                        onPressed: () async {
-                          eliminarChatFunction(index);
-                          Navigator.of(context).pop(1); 
-                        },
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
-            
-            child: ListTile(
-              title: Text(namesChats[index]["Nombres"]),
-              subtitle: Text(namesChats[index]["mensaje"]),
-              leading: Stack(
-                alignment: Alignment.center,
-                children: [
-                  selectedImages[chats[index].idChats] != null
-                            ? InkWell(
-                              onTap: () {
-                              },
-                              child: Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  CircleAvatar(
-                                    backgroundImage: isloadingProfile?null: FileImage(selectedImages[chats[index].idChats]!),
-                                  ),
-                                  if (isloadingProfile)
-                                    SizedBox(
-                                      width: 60, 
-                                      height: 60, 
-                                      child: SpinKitCircle(
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                ],
+        // Prevent RangeError by ensuring namesChats has enough elements
+        if (index >= namesChats.length || index >= chats.length) {
+          return Container(); // Return empty container if index is out of range
+        }
+
+        // Handle cases where chats[index].idPerson and namesChats[index]["mensaje"] are null or empty
+        if (chats[index].idPerson == null && namesChats[index]["mensaje"] != "") {
+          return Card(
+            margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+            elevation: 5,
+            child: InkWell(
+              onTap: () async {
+                print('idPersonDestino:' + chats[index].idPersonDestino.toString());
+                File imageFile = await getImageFileFromAssets('assets/usuario.png');
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ChatPage(
+                      idChat: chats[index].idChats,
+                      nombreChat: namesChats[index]["Nombres"],
+                      idPersonDestino: chats[index].idPersonDestino,
+                      imageChat: selectedImages[chats[index].idChats] == null
+                          ? imageFile
+                          : selectedImages[chats[index].idChats],
+                    ),
+                  ),
+                );
+              },
+              onLongPress: () async {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text('Eliminar chat?'),
+                      content: Icon(Icons.warning, color: Colors.red, size: 50),
+                      actions: <Widget>[
+                        TextButton(
+                          child: Text('Cancelar', style: TextStyle(color: Colors.black)),
+                          onPressed: () {
+                            Navigator.of(context).pop(0);
+                          },
+                        ),
+                        TextButton(
+                          child: Text('Eliminar', style: TextStyle(color: Colors.red)),
+                          onPressed: () async {
+                            eliminarChatFunction(index);
+                            Navigator.of(context).pop(1);
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+              child: ListTile(
+                title: Text(namesChats[index]["Nombres"] ?? ""),
+                subtitle: Text(namesChats[index]["mensaje"] ?? ""),
+                leading: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    selectedImages[chats[index].idChats] != null
+                        ? InkWell(
+                      onTap: () {},
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          CircleAvatar(
+                            backgroundImage: isloadingProfile
+                                ? null
+                                : FileImage(selectedImages[chats[index].idChats]!),
+                          ),
+                          if (isloadingProfile)
+                            SizedBox(
+                              width: 60,
+                              height: 60,
+                              child: SpinKitCircle(
+                                color: Colors.white,
                               ),
-                            )
-                            : InkWell(
-                              onTap: () {
-                              },
-                              child: Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                   CircleAvatar(
-                                    backgroundImage: isloadingProfile?null: AssetImage('assets/usuario.png'),
-                                  ),
-                                  if (isloadingProfile)
-                                    SizedBox(
-                                      width: 60, 
-                                      height: 60, 
-                                      child: SpinKitCircle(
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                ],
+                            ),
+                        ],
+                      ),
+                    )
+                        : InkWell(
+                      onTap: () {},
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          CircleAvatar(
+                            backgroundImage: isloadingProfile
+                                ? null
+                                : AssetImage('assets/usuario.png'),
+                          ),
+                          if (isloadingProfile)
+                            SizedBox(
+                              width: 60,
+                              height: 60,
+                              child: SpinKitCircle(
+                                color: Colors.white,
                               ),
-                            )
-                ],
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ):Container();
+          );
+        } else {
+          return Container(); // If no valid data, return an empty container
+        }
       },
     );
   }
+
 }

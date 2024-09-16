@@ -2,17 +2,11 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-
-
 class Campaign {
   final int id;
-
   final String nombre;
-
   final String descripcion;
-
   final String categoria;
-
   final DateTime dateStart;
   final DateTime dateEnd;
   final int userId;

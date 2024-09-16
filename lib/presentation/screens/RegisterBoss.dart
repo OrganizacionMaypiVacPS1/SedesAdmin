@@ -3,7 +3,7 @@ import 'package:admin/Implementation/CardholderImp.dart';
 import 'package:admin/Implementation/ProfileImp.dart';
 import 'package:admin/Models/Cardholder.dart';
 import 'package:admin/presentation/screens/List_members.dart';
-import 'package:admin/services/Config.dart';
+import 'package:admin/Config/Config.dart';
 import 'package:admin/services/services_firebase.dart';
 import 'package:crypto/crypto.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -273,15 +273,15 @@ Future<File> _downloadImage(String imageUrl) async {
   Future<void> registerUser() async {
     final url = Uri.parse(Config.baseUrl+'/register');
     if (selectedRole == 'Administrador') {
-      idRolSeleccionada = 1;
+      idRolSeleccionada = RoleMember.admin;
     } else if (selectedRole == 'Jefe de Brigada') {
-      idRolSeleccionada = 2;
+      idRolSeleccionada = RoleMember.jefeBrigada;
     } else if (selectedRole == 'Carnetizador') {
-      idRolSeleccionada = 3;
+      idRolSeleccionada = RoleMember.carnetizador;
     } else if (selectedRole == 'Cliente'){
-      idRolSeleccionada=4;
+      idRolSeleccionada= RoleMember.cliente;
     }else{
-      idRolSeleccionada=5;
+      idRolSeleccionada= RoleMember.superAdmin;
     }
     String md5Password = md5.convert(utf8.encode(password)).toString();
     final response = await http.post(
@@ -316,15 +316,15 @@ Future<File> _downloadImage(String imageUrl) async {
     final url = Uri.parse(
         Config.baseUrl+'/update/' + idPerson.toString()); //
     if (selectedRole == 'Administrador') {
-      idRolSeleccionada = 1;
+      idRolSeleccionada = RoleMember.admin;
     } else if (selectedRole == 'Jefe de Brigada') {
-      idRolSeleccionada = 2;
+      idRolSeleccionada = RoleMember.jefeBrigada;
     } else if (selectedRole == 'Carnetizador') {
-      idRolSeleccionada = 3;
+      idRolSeleccionada = RoleMember.carnetizador;
     } else if (selectedRole == 'Cliente'){
-      idRolSeleccionada=4;
+      idRolSeleccionada= RoleMember.cliente;
     }else{
-      idRolSeleccionada=5;
+      idRolSeleccionada= RoleMember.superAdmin;
     }
     final response = await http.put(
       url,

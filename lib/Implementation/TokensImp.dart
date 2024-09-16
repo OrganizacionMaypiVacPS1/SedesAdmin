@@ -1,7 +1,7 @@
 
 import 'dart:convert';
 
-import 'package:admin/services/Config.dart';
+import 'package:admin/Config/Config.dart';
 import 'package:admin/services/services_firebase.dart';
 import 'package:http/http.dart' as http;
 

@@ -1,4 +1,4 @@
-# SedesAmin-V2
+# SedesAdmin-V2
 ` fluter pub get ` (Sólo es necesario la primera vez que se ejecuta)
 
 ` flutter run ` (o el botón de run en android studio)

@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:admin/Implementation/ProfileImp.dart';
 import 'package:admin/Models/Profile.dart';
 import 'package:admin/presentation/screens/ChangePassword.dart';
-import 'package:admin/services/Config.dart';
+import 'package:admin/Config/Config.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

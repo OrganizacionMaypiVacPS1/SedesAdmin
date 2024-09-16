@@ -1,4 +1,4 @@
-import 'package:admin/services/Config.dart';
+import 'package:admin/Config/Config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:mailer/mailer.dart';
