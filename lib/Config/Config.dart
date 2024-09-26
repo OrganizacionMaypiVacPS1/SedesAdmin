@@ -1,5 +1,5 @@
 class Config {
-  static const String baseUrl = 'http://192.168.145.104:3000';
+  static const String baseUrl = 'http://192.168.0.155:3000';
 }
 
 class RoleMember {

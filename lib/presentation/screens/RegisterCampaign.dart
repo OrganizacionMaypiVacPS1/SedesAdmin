@@ -32,12 +32,19 @@ class _RegisterCampaignPageState extends State<RegisterCampaignPage> {
   List<EUbication> Ubicaciones = [];
   bool estaCargando = false;
   bool actualizar = false;
-  String? errorMessage;
   var id;
   DateTime? dateStart = DateTime.now();
   DateTime? dateEnd = DateTime.now();
   TextEditingController _textController = TextEditingController();
   FocusNode _focusNode = FocusNode();
+
+  String? nameMessage;
+  String? descriptionMessage;
+  String? categoryMessage;
+  String? kmlMessage;
+  String? dateMessage;
+
+  DateTime currentDateInGMT4 = DateTime.now().toUtc().subtract(Duration(hours: 4));
 
   void initState() {
     super.initState();
@@ -101,7 +108,14 @@ class _RegisterCampaignPageState extends State<RegisterCampaignPage> {
           }
         }
       }
-      setState(() {});
+      setState(() {
+        // Validación del archivo KML
+        if (kml.isEmpty) {
+          kmlMessage = 'Debes cargar un archivo KML.';
+        } else {
+          kmlMessage = ' ';
+        }
+      });
     }
   }
 
@@ -145,39 +159,46 @@ class _RegisterCampaignPageState extends State<RegisterCampaignPage> {
                   ),
                   SizedBox(width: 10),
                   Expanded(
-                    child: TextFormField(
-                      initialValue: nombre,
-                      style:
-                          TextStyle(color: Colors.black),
-                      decoration: InputDecoration(
-                        labelText: 'Nombre de la Actividad',
-                        labelStyle:
-                            TextStyle(color: Color.fromARGB(255, 92, 142, 203)),
-                        counterText: "${nombre.length}/50",
-                        counterStyle: TextStyle(
-                            color: Color.fromARGB(
-                                255, 92, 142, 203)), // Estilo del contador
-                        // Contador de caracteres
+                    child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      TextFormField(
+                        initialValue: nombre,
+                        style:
+                        TextStyle(color: Colors.black),
+                        decoration: InputDecoration(
+                          labelText: 'Nombre de la Actividad',
+                          labelStyle:
+                          TextStyle(color: Color.fromARGB(255, 92, 142, 203)),
+                          counterText: "${nombre.length}/50",
+                          counterStyle: TextStyle(
+                              color: Color.fromARGB(
+                                  255, 92, 142, 203)), // Estilo del contador
+                          // Contador de caracteres
+                        ),
+                        maxLength: 50, // Límite máximo de caracteres
+                        onChanged: (value) {
+                          setState(() {
+                            nameMessage = (value.isEmpty) ? 'El nombre no puede estar vacío.' : null;
+                            if (value.length > 50) {
+                              nombre = value.substring(0, 50);
+                            }else{
+                              nombre = value;
+                            }
+                          });
+                        },
+                        keyboardType: TextInputType.multiline, // Teclado multilínea
+                        maxLines: null, // Permite varias líneas de texto
                       ),
-                      maxLength: 50, // Límite máximo de caracteres
-                      onChanged: (value) {
-                        setState(() {
-                          if (value.length > 50) {
-                            nombre = value.substring(0, 50);
-                          }else{
-                            nombre = value;
-                          }
-                        });
-                      },
-                      keyboardType:
-                          TextInputType.multiline, // Teclado multilínea
-                      maxLines: null, // Permite varias líneas de texto
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'El nombre no puede estar vacío.';
-                        }
-                        return null;
-                      },
+                      if (nameMessage != null)
+                        Text(
+                          nameMessage!,
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 178, 42, 42),
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -191,37 +212,45 @@ class _RegisterCampaignPageState extends State<RegisterCampaignPage> {
                   ),
                   SizedBox(width: 10),
                   Expanded(
-                    child: TextFormField(
-                      initialValue: descripcion,
-                      style:
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        TextFormField(
+                          initialValue: descripcion,
+                          style:
                           TextStyle(color: Colors.black),
-                      decoration: InputDecoration(
-                        labelText: 'Descripción',
-                        labelStyle:
+                          decoration: InputDecoration(
+                            labelText: 'Descripción',
+                            labelStyle:
                             TextStyle(color: Color.fromARGB(255, 92, 142, 203)),
-                        counterText:
+                            counterText:
                             "${descripcion.length}/160", // Contador de caracteres
-                        counterStyle:
+                            counterStyle:
                             TextStyle(color: Color.fromARGB(255, 92, 142, 203)),
-                      ),
-                      maxLength: 160, // Límite máximo de caracteres
-                      onChanged: (value) {
-                        setState(() {
-                          if (value.length > 160) {
-                            descripcion = value.substring(0, 160);
-                          } else {
-                            descripcion = value;
-                          }
-                        });
-                      },
-                      keyboardType: TextInputType.multiline,
-                      maxLines: null,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'La descripción no puede estar vacía.';
-                        }
-                        return null;
-                      },
+                          ),
+                          maxLength: 160, // Límite máximo de caracteres
+                          onChanged: (value) {
+                            setState(() {
+                              descriptionMessage = (value.isEmpty) ? 'La descripción no puede estar vacía.' : null;
+                              if (value.length > 160) {
+                                descripcion = value.substring(0, 160);
+                              } else {
+                                descripcion = value;
+                              }
+                            });
+                          },
+                          keyboardType: TextInputType.multiline,
+                          maxLines: null,
+                        ),
+                        if (descriptionMessage != null)
+                          Text(
+                            descriptionMessage!,
+                            style: TextStyle(
+                              color: Color.fromARGB(255, 178, 42, 42),
+                              fontSize: 12,
+                            ),
+                          ),
+                      ],
                     ),
                   ),
                 ],
@@ -230,30 +259,50 @@ class _RegisterCampaignPageState extends State<RegisterCampaignPage> {
               Row(
                 children: [
                   Icon(
-                    Icons.list_alt, // Cambia esto al icono que prefieras
+                    Icons.list_alt,
                     color: Color.fromARGB(255, 92, 142, 203),
                   ),
                   SizedBox(width: 10),
                   Expanded(
-                    child: DropdownButton<String>(
-                      hint: Text('Selecciona un Tipo de Actividad',
-                          style: TextStyle(color: Color.fromARGB(255, 92, 142, 203)),),
-                      value: categoria,
-                      dropdownColor: Colors.grey[850],
-                      style:
-                          TextStyle(color: Color.fromARGB(255, 92, 142, 203)),
-                      items: <String>['Vacuna', 'Carnetizacion', 'Control de Foco', 'Vacunación Continua', 'Rastrillaje']//MAS opciones?
-                          .map((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                      onChanged: (newValue) {
-                        setState(() {
-                          categoria = newValue;
-                        });
-                      },
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        DropdownButton<String>(
+                          hint: Text(
+                            'Selecciona un Tipo de Actividad',
+                            style: TextStyle(color: Color.fromARGB(255, 92, 142, 203)),
+                          ),
+                          value: categoria,
+                          dropdownColor: Colors.grey[850],
+                          style: TextStyle(color: Color.fromARGB(255, 92, 142, 203)),
+                          items: <String>[
+                            'Vacuna',
+                            'Carnetizacion',
+                            'Control de Foco',
+                            'Vacunación Continua',
+                            'Rastrillaje'
+                          ].map((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                          onChanged: (newValue) {
+                            setState(() {
+                              categoria = newValue;
+                              categoryMessage = null;
+                            });
+                          },
+                        ),
+                        if (categoryMessage != null)
+                          Text(
+                            categoryMessage!,
+                            style: TextStyle(
+                              color: Color.fromARGB(255, 178, 42, 42),
+                              fontSize: 12,
+                            ),
+                          ),
+                      ],
                     ),
                   ),
                 ],
@@ -275,7 +324,12 @@ class _RegisterCampaignPageState extends State<RegisterCampaignPage> {
               _buildDateOfBirthField(
                 initialDate: dateStart,
                 label: 'Fecha Inicio',
-                onChanged: (value) => dateStart = value,
+                onChanged: (value) {
+                  setState(() {
+                    dateStart = value;
+                    ValidateDates();
+                  });
+                },
                 fecha: dateStart,
               ),
               SizedBox(height: 10),
@@ -295,8 +349,21 @@ class _RegisterCampaignPageState extends State<RegisterCampaignPage> {
               _buildDateOfBirthField(
                   initialDate: dateEnd,
                   label: 'Fecha Fin',
-                  onChanged: (value) => dateEnd = value,
+                  onChanged: (value) {
+                    setState(() {
+                      dateEnd = value;
+                      ValidateDates();
+                    });
+                  },
                   fecha: dateEnd),
+              if (dateMessage != null)
+                Text(
+                  dateMessage!,
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 178, 42, 42),
+                    fontSize: 12,
+                  ),
+                ),
               SizedBox(height: 15),
               ElevatedButton(
                 onPressed: estaCargando ? null : Importar_Archivo,
@@ -306,11 +373,9 @@ class _RegisterCampaignPageState extends State<RegisterCampaignPage> {
                       Color.fromARGB(255, 92, 142, 203), // Color del texto
                   elevation: 0, // Sin sombra
                   shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(5.0), // Borde redondeado
+                    borderRadius: BorderRadius.circular(5.0), // Borde redondeado
                     side: BorderSide(
-                      color:
-                          Color.fromARGB(255, 92, 142, 203), // Color del borde
+                      color: Color.fromARGB(255, 92, 142, 203), // Color del borde
                     ),
                   ),
                 ),
@@ -324,8 +389,7 @@ class _RegisterCampaignPageState extends State<RegisterCampaignPage> {
                     SizedBox(width: 8), // Espacio entre el icono y el texto
                     Text(
                       'Importar KML',
-                      style:
-                          TextStyle(color: Colors.black),
+                      style: TextStyle(color: Colors.black),
                     ),
                   ],
                 ),
@@ -333,11 +397,21 @@ class _RegisterCampaignPageState extends State<RegisterCampaignPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(kml,
-                      style:
-                          TextStyle(color: Color.fromARGB(255, 92, 142, 203))),
+                  Text(kml,style:TextStyle(color: Color.fromARGB(255, 92, 142, 203))),
                 ],
               ),
+              // Mensaje de error para el archivo KML
+              if (kmlMessage != null)
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: Text(
+                    kmlMessage!,
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 178, 42, 42),
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
               SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -349,7 +423,6 @@ class _RegisterCampaignPageState extends State<RegisterCampaignPage> {
                           (dateStart!.isBefore(dateEnd!) ||
                               dateStart!.isAtSameMomentAs(dateEnd!))) {
 
-                        
                         await showLoadingDialog(context, () async {
                           Campaign updatedCampaign = Campaign(
                             id: id,
@@ -366,13 +439,13 @@ class _RegisterCampaignPageState extends State<RegisterCampaignPage> {
                             Ubicaciones.clear();
                           }
 
-
                         });
                         showSnackbar(context, "Se ha actualizado con éxito");
                         Navigator.pop(context, 1);
                         //Mostrar_Finalizado(
                            // context, "Se ha actualizado con éxito");
-                      } else if (_formKey.currentState!.validate() &&
+                      } else if ( nombre != '' &&
+                          descripcion != '' &&
                           categoria != null &&
                           kml != '' &&
                           (dateStart!.isBefore(dateEnd!) ||
@@ -396,6 +469,7 @@ class _RegisterCampaignPageState extends State<RegisterCampaignPage> {
                         Navigator.pop(context, 1);
 
                       } else {
+                        ValidateEmpty();
                         Mostrar_Error(context, "Ingrese todos los campos");
                       }
                     },
@@ -437,7 +511,8 @@ class _RegisterCampaignPageState extends State<RegisterCampaignPage> {
                             ],
                           );
                         },
-                      );}else{
+                      );}
+                      else{
                         Navigator.of(context).pop(0);
                       }
                     },
@@ -525,6 +600,56 @@ class _RegisterCampaignPageState extends State<RegisterCampaignPage> {
         SizedBox(height: 15),
       ],
     );
+  }
+
+  void ValidateDates() {
+    if ((dateEnd!.isAfter(dateStart!) || dateStart!.isAtSameMomentAs(dateEnd!))
+        && !(DateTime(dateEnd!.year, dateEnd!.month, dateEnd!.day).isBefore
+          (DateTime(currentDateInGMT4.year, currentDateInGMT4.month, currentDateInGMT4.day)))){
+      dateMessage = null;
+    }
+    else{
+      dateMessage = (DateTime(dateEnd!.year, dateEnd!.month, dateEnd!.day).isBefore
+        (DateTime(currentDateInGMT4.year, currentDateInGMT4.month, currentDateInGMT4.day))) ?
+       'No puede crear campañas finalizadas.' : 'Fecha Final debe de ser posterior o igual a inicio.';
+    }
+  }
+
+  void ValidateEmpty(){
+    if (nombre == '') {
+      setState(() {
+        nameMessage = 'El nombre no puede estar vacío.';
+      });
+    }
+    if (descripcion == '') {
+      setState(() {
+        descriptionMessage = 'La descripción no puede estar vacía.';
+      });
+    }
+    if (categoria == null) {
+      setState(() {
+        categoryMessage = 'Debe seleccionar una categoría.';
+      });
+    }
+    if (kml == '') {
+      setState(() {
+        kmlMessage = 'Debe cargar un archivo KML.';
+      });
+    }
+
+    if ((dateEnd!.isBefore(dateStart!))){
+      setState(() {
+        dateMessage = 'Fecha Final debe de ser posterior o igual a inicio.';
+      });
+    }
+
+    if (DateTime(dateEnd!.year, dateEnd!.month, dateEnd!.day).isBefore
+      (DateTime(currentDateInGMT4.year, currentDateInGMT4.month, currentDateInGMT4.day))) {
+      setState(() {
+        dateMessage = 'No puede crear campañas finalizadas.';
+      });
+    }
+
   }
 
 }
