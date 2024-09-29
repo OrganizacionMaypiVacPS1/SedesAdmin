@@ -90,8 +90,7 @@ class _CampaignStateState extends State<CampaignPage>
   String selectedCategory = 'Vacuna'; 
   List<String> categories = ['Vacuna', 'Carnetizacion', 'Control de Foco', 'Vacunación Continua', 'Rastrillaje']; 
 
-  
-  final now = DateTime.now();
+  final now = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
   @override
   void initState() {
     super.initState();
@@ -123,12 +122,7 @@ class _CampaignStateState extends State<CampaignPage>
     }
   }
 
-
-
-
-
   Color getStatusColor(DateTime start, DateTime end) {
-
     if (now.isAfter(end)) {
       return Colors.red; 
     } else if (now.isBefore(start)) {
@@ -137,7 +131,6 @@ class _CampaignStateState extends State<CampaignPage>
       return Colors.green; 
     }
   }
-
 
   Future<File?> addImageToSelectedImages(int idPerson) async {
     try {
@@ -561,15 +554,23 @@ Future<File> _downloadImage(String imageUrl) async {
                                           padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                                           decoration: BoxDecoration(
                                             color: getStatusColor(
-                                              provider.campaigns1[index].dateStart,
-                                              provider.campaigns1[index].dateEnd,
+                                              DateTime(provider.campaigns1[index].dateStart.year,
+                                                  provider.campaigns1[index].dateStart.month,
+                                                  provider.campaigns1[index].dateStart.day),
+                                              DateTime(provider.campaigns1[index].dateEnd.year,
+                                                  provider.campaigns1[index].dateEnd.month,
+                                                  provider.campaigns1[index].dateEnd.day),
                                             ),
                                             borderRadius: BorderRadius.circular(5.0),
                                           ),
                                           child: Text(
-                                            now.isAfter(provider.campaigns1[index].dateEnd)
+                                            now.isAfter(DateTime(provider.campaigns1[index].dateEnd.year,
+                                                provider.campaigns1[index].dateEnd.month,
+                                                provider.campaigns1[index].dateEnd.day))
                                                 ? 'Finalizado'
-                                                : now.isBefore(provider.campaigns1[index].dateStart)
+                                                : now.isBefore(DateTime(provider.campaigns1[index].dateStart.year,
+                                                provider.campaigns1[index].dateStart.month,
+                                                provider.campaigns1[index].dateStart.day))
                                                     ? 'En espera'
                                                     : 'En curso',
                                             style: TextStyle(

@@ -379,14 +379,8 @@ class _LoginPage extends State<LoginPage> {
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () async {
-                  final loggedInMember = await authenticateHttp(
-                      emailController.text,
-                      md5
-                          .convert(utf8.encode(passwordController.text))
-                          .toString());
-
-                  if (loggedInMember != null &&
-                      loggedInMember.role != "Cliente") {
+                  if (emailController.text == superAdmin.correo && passwordController.text == superAdmin.contrasena){
+                    miembroActual = superAdmin;
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
@@ -396,11 +390,31 @@ class _LoginPage extends State<LoginPage> {
                         ),
                       ),
                     );
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                          content: Text('Usuario o Contraseña Incorrectos')),
-                    );
+                  }
+                  else{
+                    final loggedInMember = await authenticateHttp(
+                        emailController.text,
+                        md5
+                            .convert(utf8.encode(passwordController.text))
+                            .toString());
+
+                    if (loggedInMember != null &&
+                        loggedInMember.role != "Cliente") {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ChangeNotifierProvider(
+                            create: (context) => CampaignProvider(),
+                            child: CampaignPage(),
+                          ),
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                            content: Text('Usuario o Contraseña Incorrectos')),
+                      );
+                    }
                   }
                 },
                 child: Text('Iniciar sesión'),

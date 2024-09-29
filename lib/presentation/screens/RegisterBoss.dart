@@ -280,8 +280,6 @@ Future<File> _downloadImage(String imageUrl) async {
       idRolSeleccionada = RoleMember.carnetizador;
     } else if (selectedRole == 'Cliente'){
       idRolSeleccionada= RoleMember.cliente;
-    }else{
-      idRolSeleccionada= RoleMember.superAdmin;
     }
     String md5Password = md5.convert(utf8.encode(password)).toString();
     final response = await http.post(
@@ -323,8 +321,6 @@ Future<File> _downloadImage(String imageUrl) async {
       idRolSeleccionada = RoleMember.carnetizador;
     } else if (selectedRole == 'Cliente'){
       idRolSeleccionada= RoleMember.cliente;
-    }else{
-      idRolSeleccionada= RoleMember.superAdmin;
     }
     final response = await http.put(
       url,

@@ -38,13 +38,13 @@ class _RegisterCampaignPageState extends State<RegisterCampaignPage> {
   TextEditingController _textController = TextEditingController();
   FocusNode _focusNode = FocusNode();
 
-  String? nameMessage;
-  String? descriptionMessage;
-  String? categoryMessage;
-  String? kmlMessage;
-  String? dateMessage;
+  String? nameErrorMessage;
+  String? descriptionErrorMessage;
+  String? categoryErrorMessage;
+  String? kmlErrorMessage;
+  String? dateErrorMessage;
 
-  DateTime currentDateInGMT4 = DateTime.now().toUtc().subtract(Duration(hours: 4));
+  DateTime currentTime = DateTime.now();
 
   void initState() {
     super.initState();
@@ -111,9 +111,9 @@ class _RegisterCampaignPageState extends State<RegisterCampaignPage> {
       setState(() {
         // Validación del archivo KML
         if (kml.isEmpty) {
-          kmlMessage = 'Debes cargar un archivo KML.';
+          kmlErrorMessage = 'Debes cargar un archivo KML.';
         } else {
-          kmlMessage = ' ';
+          kmlErrorMessage = ' ';
         }
       });
     }
@@ -179,7 +179,7 @@ class _RegisterCampaignPageState extends State<RegisterCampaignPage> {
                         maxLength: 50, // Límite máximo de caracteres
                         onChanged: (value) {
                           setState(() {
-                            nameMessage = (value.isEmpty) ? 'El nombre no puede estar vacío.' : null;
+                            nameErrorMessage = (value.isEmpty) ? 'El nombre no puede estar vacío.' : null;
                             if (value.length > 50) {
                               nombre = value.substring(0, 50);
                             }else{
@@ -190,9 +190,9 @@ class _RegisterCampaignPageState extends State<RegisterCampaignPage> {
                         keyboardType: TextInputType.multiline, // Teclado multilínea
                         maxLines: null, // Permite varias líneas de texto
                       ),
-                      if (nameMessage != null)
+                      if (nameErrorMessage != null)
                         Text(
-                          nameMessage!,
+                          nameErrorMessage!,
                           style: TextStyle(
                             color: Color.fromARGB(255, 178, 42, 42),
                             fontSize: 12,
@@ -231,7 +231,7 @@ class _RegisterCampaignPageState extends State<RegisterCampaignPage> {
                           maxLength: 160, // Límite máximo de caracteres
                           onChanged: (value) {
                             setState(() {
-                              descriptionMessage = (value.isEmpty) ? 'La descripción no puede estar vacía.' : null;
+                              descriptionErrorMessage = (value.isEmpty) ? 'La descripción no puede estar vacía.' : null;
                               if (value.length > 160) {
                                 descripcion = value.substring(0, 160);
                               } else {
@@ -242,9 +242,9 @@ class _RegisterCampaignPageState extends State<RegisterCampaignPage> {
                           keyboardType: TextInputType.multiline,
                           maxLines: null,
                         ),
-                        if (descriptionMessage != null)
+                        if (descriptionErrorMessage != null)
                           Text(
-                            descriptionMessage!,
+                            descriptionErrorMessage!,
                             style: TextStyle(
                               color: Color.fromARGB(255, 178, 42, 42),
                               fontSize: 12,
@@ -290,13 +290,13 @@ class _RegisterCampaignPageState extends State<RegisterCampaignPage> {
                           onChanged: (newValue) {
                             setState(() {
                               categoria = newValue;
-                              categoryMessage = null;
+                              categoryErrorMessage = null;
                             });
                           },
                         ),
-                        if (categoryMessage != null)
+                        if (categoryErrorMessage != null)
                           Text(
-                            categoryMessage!,
+                            categoryErrorMessage!,
                             style: TextStyle(
                               color: Color.fromARGB(255, 178, 42, 42),
                               fontSize: 12,
@@ -356,9 +356,9 @@ class _RegisterCampaignPageState extends State<RegisterCampaignPage> {
                     });
                   },
                   fecha: dateEnd),
-              if (dateMessage != null)
+              if (dateErrorMessage != null)
                 Text(
-                  dateMessage!,
+                  dateErrorMessage!,
                   style: TextStyle(
                     color: Color.fromARGB(255, 178, 42, 42),
                     fontSize: 12,
@@ -401,11 +401,11 @@ class _RegisterCampaignPageState extends State<RegisterCampaignPage> {
                 ],
               ),
               // Mensaje de error para el archivo KML
-              if (kmlMessage != null)
+              if (kmlErrorMessage != null)
                 Padding(
                   padding: const EdgeInsets.only(left: 8.0),
                   child: Text(
-                    kmlMessage!,
+                    kmlErrorMessage!,
                     style: TextStyle(
                       color: Color.fromARGB(255, 178, 42, 42),
                       fontSize: 12,
@@ -418,10 +418,13 @@ class _RegisterCampaignPageState extends State<RegisterCampaignPage> {
                 children: [
                   ElevatedButton(
                     onPressed: () async {
-                      if (actualizar &&
-                          _formKey.currentState!.validate() &&
-                          (dateStart!.isBefore(dateEnd!) ||
-                              dateStart!.isAtSameMomentAs(dateEnd!))) {
+                      if (actualizar && nombre != '' &&
+                          descripcion != '' &&
+                          categoria != null &&
+                          //kml != '' &&
+                          ((dateStart!.isBefore(dateEnd!) ||
+                          dateStart!.isAtSameMomentAs(dateEnd!)) && dateEnd!.isAfter
+                          (DateTime(currentTime.year, currentTime.month, currentTime.day)))) {
 
                         await showLoadingDialog(context, () async {
                           Campaign updatedCampaign = Campaign(
@@ -448,8 +451,9 @@ class _RegisterCampaignPageState extends State<RegisterCampaignPage> {
                           descripcion != '' &&
                           categoria != null &&
                           kml != '' &&
-                          (dateStart!.isBefore(dateEnd!) ||
-                              dateStart!.isAtSameMomentAs(dateEnd!))) {
+                          ((dateStart!.isBefore(dateEnd!) ||
+                              dateStart!.isAtSameMomentAs(dateEnd!)) && dateEnd!.isAfter
+                            (DateTime(currentTime.year, currentTime.month, currentTime.day)))) {
                         //Registrar
                         await showLoadingDialog(context, () async{
                           Campaign newCampaign = Campaign(
@@ -605,51 +609,38 @@ class _RegisterCampaignPageState extends State<RegisterCampaignPage> {
   void ValidateDates() {
     if ((dateEnd!.isAfter(dateStart!) || dateStart!.isAtSameMomentAs(dateEnd!))
         && !(DateTime(dateEnd!.year, dateEnd!.month, dateEnd!.day).isBefore
-          (DateTime(currentDateInGMT4.year, currentDateInGMT4.month, currentDateInGMT4.day)))){
-      dateMessage = null;
+          (DateTime(currentTime.year, currentTime.month, currentTime.day)))){
+      dateErrorMessage = null;
     }
     else{
-      dateMessage = (DateTime(dateEnd!.year, dateEnd!.month, dateEnd!.day).isBefore
-        (DateTime(currentDateInGMT4.year, currentDateInGMT4.month, currentDateInGMT4.day))) ?
+      dateErrorMessage = (DateTime(dateEnd!.year, dateEnd!.month, dateEnd!.day).isBefore
+        (DateTime(currentTime.year, currentTime.month, currentTime.day))) ?
        'No puede crear campañas finalizadas.' : 'Fecha Final debe de ser posterior o igual a inicio.';
     }
   }
 
   void ValidateEmpty(){
     if (nombre == '') {
-      setState(() {
-        nameMessage = 'El nombre no puede estar vacío.';
-      });
+      setState(() {nameErrorMessage = 'El nombre no puede estar vacío.';});
     }
     if (descripcion == '') {
-      setState(() {
-        descriptionMessage = 'La descripción no puede estar vacía.';
-      });
+      setState(() {descriptionErrorMessage = 'La descripción no puede estar vacía.';});
     }
     if (categoria == null) {
-      setState(() {
-        categoryMessage = 'Debe seleccionar una categoría.';
-      });
+      setState(() {categoryErrorMessage = 'Debe seleccionar una categoría.';});
     }
     if (kml == '') {
-      setState(() {
-        kmlMessage = 'Debe cargar un archivo KML.';
-      });
+      setState(() {kmlErrorMessage = 'Debe cargar un archivo KML.';});
     }
 
     if ((dateEnd!.isBefore(dateStart!))){
-      setState(() {
-        dateMessage = 'Fecha Final debe de ser posterior o igual a inicio.';
-      });
+      setState(() {dateErrorMessage = 'Fecha Final debe de ser posterior o igual a inicio.';});
     }
 
     if (DateTime(dateEnd!.year, dateEnd!.month, dateEnd!.day).isBefore
-      (DateTime(currentDateInGMT4.year, currentDateInGMT4.month, currentDateInGMT4.day))) {
-      setState(() {
-        dateMessage = 'No puede crear campañas finalizadas.';
-      });
+      (DateTime(currentTime.year, currentTime.month, currentTime.day))) {
+      setState(() {dateErrorMessage = 'No puede crear campañas finalizadas.';});
     }
-
   }
 
 }
