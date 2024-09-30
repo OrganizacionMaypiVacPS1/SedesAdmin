@@ -19,7 +19,7 @@ class ChatMessage {
       mensaje: json['mensaje'],
       idChat: json['idChat'],
       nombres: json['Nombres'],
-      fechaRegistro: DateTime.parse(json['fechaRegistro']),
+      fechaRegistro: DateTime.parse(json['fechaRegistro']).toUtc().add(Duration(hours: -4)),
     );
   }
 

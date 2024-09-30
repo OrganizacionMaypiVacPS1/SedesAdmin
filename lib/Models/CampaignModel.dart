@@ -28,8 +28,8 @@ class Campaign {
       nombre: json['NombreCampaña'],
       descripcion: json['Descripcion'],
       categoria: json['Categoria'],
-      dateStart: DateTime.parse(json['FechaInicio']),
-      dateEnd: DateTime.parse(json['FechaFinal']),
+      dateStart: DateTime.parse(json['FechaInicio']).toUtc().add(Duration(hours: -4)),
+      dateEnd: DateTime.parse(json['FechaFinal']).toUtc().add(Duration(hours: -4)),
       userId: json['userId'],
     );
   }

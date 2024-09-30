@@ -85,7 +85,7 @@ class _ChatPageState extends State<ChatPage> {
               mensaje: data[1],
               idChat: widget.idChat,
               nombres: data[2],
-              fechaRegistro: DateTime.now(),
+              fechaRegistro: DateTime.now().toUtc().add(Duration(hours: -4)),
           ));
         });
         _scrollController.animateTo(
@@ -105,8 +105,6 @@ class _ChatPageState extends State<ChatPage> {
 
   Widget buildMessage(ChatMessage message) {
     bool isSender = message.idPerson == miembroActual!.id;
-
-    // Formatear la hora del mensaje
     String horaMensaje = DateFormat('HH:mm').format(message.fechaRegistro);
 
     return Padding(
@@ -162,7 +160,6 @@ class _ChatPageState extends State<ChatPage> {
         List<Widget> messageWidgets = [];
 
         if (isNewDay) {
-          // Si es un nuevo día, agrega un separador de fecha
           messageWidgets.add(
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 10.0),
@@ -176,10 +173,9 @@ class _ChatPageState extends State<ChatPage> {
           );
         }
 
-        // Añade el mensaje con padding ajustado para mayor separación de los bordes
         messageWidgets.add(
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 15.0),  // Añadir margen lateral
+            padding: EdgeInsets.symmetric(horizontal: 15.0),
             child: Align(
               alignment: currentMessage.idPerson == miembroActual!.id
                   ? Alignment.centerRight

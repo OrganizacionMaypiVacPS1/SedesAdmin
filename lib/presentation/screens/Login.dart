@@ -379,7 +379,7 @@ class _LoginPage extends State<LoginPage> {
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () async {
-                  if (emailController.text == superAdmin.correo && passwordController.text == superAdmin.contrasena){
+                  if (emailController.text.trim() == superAdmin.correo && passwordController.text == superAdmin.contrasena){
                     miembroActual = superAdmin;
                     Navigator.pushReplacement(
                       context,
@@ -393,7 +393,7 @@ class _LoginPage extends State<LoginPage> {
                   }
                   else{
                     final loggedInMember = await authenticateHttp(
-                        emailController.text,
+                        emailController.text.trim(),
                         md5
                             .convert(utf8.encode(passwordController.text))
                             .toString());

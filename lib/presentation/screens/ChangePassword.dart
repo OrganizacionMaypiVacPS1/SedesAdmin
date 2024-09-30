@@ -157,9 +157,17 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                                   ),
                                 ),
                                 onChanged: (value) => _password = value,
-                                validator: (value) =>
-                                    value!.isEmpty ? 'Campo requerido' : null,
+                                validator: (value)  {
+                                  if (value!.isEmpty) {
+                                    return 'Campo requerido';
+                                  }
+                                  if (value.length > 250) {
+                                    return 'Contraseña máxima de 250 caracteres';
+                                  }
+                                  return null;
+                                },
                                 obscureText: true,
+                                maxLength: 250,
                               ),
                             ),
                           ],
@@ -187,11 +195,15 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                                 onChanged: (value) => _confirmPassword = value,
                                 validator: (value) {
                                   if (value!.isEmpty) return 'Campo requerido';
+                                  if (value.length > 250) {
+                                    return 'Contraseña máxima de 250 caracteres';
+                                  }
                                   if (value != _password)
                                     return 'Las contraseñas no coinciden';
                                   return null;
                                 },
                                 obscureText: true,
+                                maxLength: 250,
                               ),
                             ),
                           ],
