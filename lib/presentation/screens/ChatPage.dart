@@ -13,7 +13,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-
+import 'package:intl/intl.dart';
 
 void main() => runApp(ChatApp());
 
@@ -40,56 +40,53 @@ class ChatPage extends StatefulWidget {
   final int idPersonDestino;
   final File? imageChat;
   ChatPage({required this.idChat, required this.nombreChat, required this.idPersonDestino, this.imageChat});
+
   @override
   _ChatPageState createState() => _ChatPageState();
 }
 
 class _ChatPageState extends State<ChatPage> {
   ScrollController _scrollController = ScrollController();
-  bool isLoadingMessages=false;
-  TextStyle styleNombreMensaje = TextStyle(
-      color: Colors.grey[350],
-      fontSize: 18.0,
-      fontWeight: FontWeight.bold,
-      fontStyle: FontStyle.italic, 
-      shadows: [
-        Shadow(
-          blurRadius: 2.0,
-          color: Colors.black38,
-          offset: Offset(1.0, 1.0),
-        ),
-      ],
-    );
-
-
-
-
+  bool isLoadingMessages = false;
   TextEditingController _controller = TextEditingController();
+  TextStyle styleNombreMensaje = TextStyle(
+    color: Colors.grey[350],
+    fontSize: 18.0,
+    fontWeight: FontWeight.bold,
+    fontStyle: FontStyle.italic,
+    shadows: [
+      Shadow(
+        blurRadius: 2.0,
+        color: Colors.black38,
+        offset: Offset(1.0, 1.0),
+      ),
+    ],
+  );
 
   @override
   void initState() {
     super.initState();
     currentChatId = widget.idChat;
 
-    fetchMessage(context, widget.idChat).then((value) => {
-      if(mounted){
-        setState((){
-          messages = value;
-          messages = messages.reversed.toList();
-          print(messages.toString());
-          print(miembroActual!.id);
-          isLoadingMessages=true;
-        })
-      }
-    });
-  
-    socket.on('chat message', (data) async {
-      //ChatMessage chat = ChatMessage(idPerson: miembroActual!.id, mensaje: data, idChat: widget.idChat);
-      int chatId = widget.idChat;
+    fetchMessage(context, widget.idChat).then((value) {
       if (mounted) {
         setState(() {
-          if(chatId == data[3])
-          messages.insert(0, ChatMessage(idPerson: data[0], mensaje: data[1], idChat: chatId, nombres: data[2]));
+          messages = value.reversed.toList();
+          isLoadingMessages = true;
+        });
+      }
+    });
+
+    socket.on('chat message', (data) async {
+      if (mounted && widget.idChat == data[3]) {
+        setState(() {
+          messages.insert(0, ChatMessage(
+              idPerson: data[0],
+              mensaje: data[1],
+              idChat: widget.idChat,
+              nombres: data[2],
+              fechaRegistro: DateTime.now(),
+          ));
         });
         _scrollController.animateTo(
           0.0,
@@ -97,19 +94,116 @@ class _ChatPageState extends State<ChatPage> {
           curve: Curves.easeOut,
         );
       }
-      
     });
   }
 
-
-
   @override
   void dispose() {
-    currentChatId=0;
+    currentChatId = 0;
     super.dispose();
-    
-    
   }
+
+  Widget buildMessage(ChatMessage message) {
+    bool isSender = message.idPerson == miembroActual!.id;
+
+    // Formatear la hora del mensaje
+    String horaMensaje = DateFormat('HH:mm').format(message.fechaRegistro);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5.0),
+      child: Column(
+        crossAxisAlignment: isSender ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: [
+          Text(isSender ? 'Yo' : message.nombres, style: styleNombreMensaje),
+          Card(
+            color: isSender ? Colors.green : Colors.white,
+            elevation: 5.0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15.0),
+            ),
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    message.mensaje,
+                    style: TextStyle(color: isSender ? Colors.white : Colors.black),
+                  ),
+                  SizedBox(height: 5.0),
+                  // Mostrar la hora del mensaje
+                  Text(
+                    horaMensaje,
+                    style: TextStyle(fontSize: 10.0, color: isSender ? Colors.white70 : Colors.black54),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+
+  Widget buildMessageList() {
+    return ListView.builder(
+      reverse: true,
+      controller: _scrollController,
+      padding: EdgeInsets.all(10.0),
+      itemCount: messages.length,
+      itemBuilder: (context, index) {
+        ChatMessage currentMessage = messages[index];
+        ChatMessage? previousMessage = index < messages.length - 1 ? messages[index + 1] : null;
+
+        bool isNewDay = previousMessage == null ||
+            !isSameDay(currentMessage.fechaRegistro, previousMessage.fechaRegistro);
+
+        List<Widget> messageWidgets = [];
+
+        if (isNewDay) {
+          // Si es un nuevo día, agrega un separador de fecha
+          messageWidgets.add(
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10.0),
+              child: Center(
+                child: Text(
+                  DateFormat('EEEE, MMM d, yyyy').format(currentMessage.fechaRegistro),
+                  style: TextStyle(color: Colors.grey, fontSize: 12.0),
+                ),
+              ),
+            ),
+          );
+        }
+
+        // Añade el mensaje con padding ajustado para mayor separación de los bordes
+        messageWidgets.add(
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 15.0),  // Añadir margen lateral
+            child: Align(
+              alignment: currentMessage.idPerson == miembroActual!.id
+                  ? Alignment.centerRight
+                  : Alignment.centerLeft,
+              child: buildMessage(currentMessage),
+            ),
+          ),
+        );
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: messageWidgets,
+        );
+      },
+    );
+  }
+
+
+  bool isSameDay(DateTime date1, DateTime date2) {
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -117,101 +211,34 @@ class _ChatPageState extends State<ChatPage> {
       backgroundColor: Color(0xFF5C8ECB),
       appBar: AppBar(
         backgroundColor: Color(0xFF5C8ECB),
-        title: Row(children: [
-          CircleAvatar(
-            backgroundImage: FileImage(widget.imageChat!),
-          ),
-          SizedBox(width: 20,),
-          Text(widget.nombreChat, style: TextStyle(color: Colors.white)),
-        ],) ,
+        title: Row(
+          children: [
+            if (widget.imageChat != null) CircleAvatar(backgroundImage: FileImage(widget.imageChat!)),
+            SizedBox(width: 20),
+            Text(widget.nombreChat, style: TextStyle(color: Colors.white)),
+          ],
+        ),
         centerTitle: true,
-        leading: Builder(
-          builder: (context) => IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: isLoadingMessages? Column(
-        children: <Widget>[
-          Expanded(
-            child: ListView.builder(
-              reverse: true,
-              controller: _scrollController,
-              padding: EdgeInsets.all(10.0),
-              itemCount: messages.length,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 5.0),
-                  child: Column(
-                    crossAxisAlignment:
-                        widget.idPersonDestino!=0?
-                         (messages[index].idPerson != widget.idPersonDestino
-                            ? CrossAxisAlignment.end
-                            : CrossAxisAlignment.start):
-                            (messages[index].idPerson == miembroActual!.id?CrossAxisAlignment.end
-                            : CrossAxisAlignment.start),
-                    children: <Widget>[
-                      widget.idPersonDestino!=0?
-                      (messages[index].idPerson != widget.idPersonDestino
-                        && messages[index].idPerson == miembroActual!.id
-                        ? Text('Yo', style: styleNombreMensaje)
-                        : Text(messages[index].nombres, style: styleNombreMensaje)
-                      )
-                      :
-                      (messages[index].idPerson == miembroActual!.id
-                        ? Text('Yo', style: styleNombreMensaje)
-                        : Text(messages[index].nombres, style: styleNombreMensaje)
-                      ),  
-                      Card(
-                        color: 
-                        widget.idPersonDestino!=0?
-                        (messages[index].idPerson != widget.idPersonDestino
-                            ? Colors.green
-                            : Colors.white):(messages[index].idPerson == miembroActual!.id
-                            ? Colors.green
-                            : Colors.white),
-                        elevation: 5.0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                        ),
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 15.0, vertical: 10.0),
-                          child: Text(
-                            messages[index].mensaje,
-                            style: TextStyle(
-                              color:
-                                  widget.idPersonDestino!=0?
-                                  (messages[index].idPerson != widget.idPersonDestino //messages[index].idPerson == miembroActual!.id
-                                      ? Colors.white
-                                      : Colors.black):(messages[index].idPerson == miembroActual!.id
-                                      ? Colors.white
-                                      : Colors.black),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),
+      body: isLoadingMessages
+          ? Column(
+        children: [
+          Expanded(child: buildMessageList()),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
             child: Row(
-              children: <Widget>[
+              children: [
                 Expanded(
                   child: TextField(
                     controller: _controller,
                     style: TextStyle(color: Color(0xFF4D6596)),
                     decoration: InputDecoration(
                       hintText: 'Escribe un mensaje...',
-                      hintStyle:
-                          TextStyle(color: Color(0xFF4D6596).withOpacity(0.7)),
+                      hintStyle: TextStyle(color: Color(0xFF4D6596).withOpacity(0.7)),
                       filled: true,
                       fillColor: Colors.white,
                       border: OutlineInputBorder(
@@ -229,20 +256,18 @@ class _ChatPageState extends State<ChatPage> {
                   onPressed: () async {
                     if (_controller.text.isNotEmpty) {
                       await sendMessage(context, miembroActual!.id, _controller.text, widget.idChat);
-                      //socket.emit('chat message', _controller.text);
                       _controller.clear();
                     }
                   },
-                )
+                ),
               ],
             ),
-          )
+          ),
         ],
-      ):Center(child: SpinKitCircle(
-                      color: Colors.white,
-                      size: 50.0,
-                    ),),
+      )
+          : Center(child: SpinKitCircle(color: Colors.white, size: 50.0)),
     );
   }
 }
+
 

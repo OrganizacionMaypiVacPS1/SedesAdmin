@@ -9,8 +9,9 @@ class ChatMessage {
   final String mensaje;
   final int idChat;
   final String nombres;
+  final DateTime fechaRegistro;
 
-  ChatMessage({required this.idPerson,required this.mensaje, required this.idChat, required this.nombres});
+  ChatMessage({required this.idPerson,required this.mensaje, required this.idChat, required this.nombres, required this.fechaRegistro,});
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) {
     return ChatMessage(
@@ -18,6 +19,7 @@ class ChatMessage {
       mensaje: json['mensaje'],
       idChat: json['idChat'],
       nombres: json['Nombres'],
+      fechaRegistro: DateTime.parse(json['fechaRegistro']),
     );
   }
 

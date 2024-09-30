@@ -52,8 +52,6 @@ class _ChatScreenStateState extends State<ChatScreenState> with SingleTickerProv
   final ConnectivityService _connectivityService = ConnectivityService();
   Map<int, File?> _selectedImages = {};
 
-
-
   @override
   void initState() {
     super.initState();
@@ -81,17 +79,13 @@ class _ChatScreenStateState extends State<ChatScreenState> with SingleTickerProv
           isLoading = false,
           loadAllImages()
         })
-        
       });
       
     }else{
       isLoading=false;
       loadAllImages();
     }
-    
 
-    
-    
     //namesChats = await fetchNamesPersonDestino(miembroActual!.id);
     socket.on('chat message', (data) async {
       if (!mounted) return; 
@@ -106,16 +100,11 @@ class _ChatScreenStateState extends State<ChatScreenState> with SingleTickerProv
       });
 
       if (mounted) {
-        setState(() {
-          
-        });
+        setState(() {});
       }
     });
-
   }
-
-  
-    }
+  }
 
 Future<Member?> getPersonById(int userId) async {
   final response = await http.get(
@@ -279,8 +268,6 @@ Future<File> _downloadImage(String imageUrl) async {
       isLoading =false;
     });
     //
-    
-    
   }
 
   @override
@@ -310,11 +297,8 @@ Future<File> _downloadImage(String imageUrl) async {
       ? TabBarView(
           controller: _tabController,
           children: [
-            
-            EstadoList(eliminarChatFunction: eliminarChat, selectedImages: _selectedImages,)
-            ,
+            EstadoList(eliminarChatFunction: eliminarChat, selectedImages: _selectedImages,),
             ChatList(eliminarChatFunction: eliminarChat, selectedImages: _selectedImages),
-
           ],
         )
       : Center(
@@ -493,7 +477,6 @@ class ChatList extends StatelessWidget {
                                     ),
                                 ],
                               ),
-                            
                 ],
               ),
             ),

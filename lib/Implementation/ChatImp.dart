@@ -10,19 +10,19 @@ import 'package:http/http.dart' as http;
   
   Future<List<ChatMessage>> fetchMessage(BuildContext context, int idChat) async {
   final response = await http
-      .get(Uri.parse(Config.baseUrl+'/getmessage/'+idChat.toString())); //192.168.14.112
+      .get(Uri.parse(Config.baseUrl+'/getmessage/'+idChat.toString()));
   if (response.statusCode == 200) {
     List<dynamic> jsonResponse = json.decode(response.body);
     return jsonResponse.map((data) => ChatMessage.fromJson(data)).toList();
   } else {
     showSnackbar(context, "Fallo al obtener los Chats");
     return [];
+    }
   }
-}
 
   Future<int> getLastIdChat(BuildContext context) async {
   final response = await http
-      .get(Uri.parse(Config.baseUrl+'/lastidchat/')); //192.168.14.112
+      .get(Uri.parse(Config.baseUrl+'/lastidchat/'));
   if (response.statusCode == 200) {
     List<dynamic> jsonResponse = json.decode(response.body);
     var res = jsonResponse[0]['AUTO_INCREMENT'];
@@ -35,7 +35,7 @@ import 'package:http/http.dart' as http;
 
   Future<int> getIdPersonByEMail(String correo) async {
   final response = await http
-      .get(Uri.parse(Config.baseUrl+'/getpersonbyemail/'+correo)); //192.168.14.112
+      .get(Uri.parse(Config.baseUrl+'/getpersonbyemail/'+correo));
   if (response.statusCode == 200) {
     List<dynamic> jsonResponse = json.decode(response.body);
     print(jsonResponse[0]['idPerson']);
@@ -48,7 +48,7 @@ import 'package:http/http.dart' as http;
 
   Future<void> deleteChat(BuildContext context, int idChat) async {
   final response = await http
-      .put(Uri.parse(Config.baseUrl+'/deletechat/'+idChat.toString())); //192.168.14.112
+      .put(Uri.parse(Config.baseUrl+'/deletechat/'+idChat.toString()));
    if (response.statusCode != 200 && response.statusCode != 201) {
     showSnackbar(context, "Error: " + response.body.toString());
   }
@@ -56,7 +56,7 @@ import 'package:http/http.dart' as http;
 
   Future<int> getIdRolByIdPerson(int id) async {
   final response = await http
-      .get(Uri.parse(Config.baseUrl+'/getidrol/'+id.toString())); //192.168.14.112
+      .get(Uri.parse(Config.baseUrl+'/getidrol/'+id.toString()));
   if (response.statusCode == 200) {
     List<dynamic> jsonResponse = json.decode(response.body);
     print(jsonResponse[0]['idRol']);
