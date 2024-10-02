@@ -135,6 +135,7 @@ class _ChatPageState extends State<ChatPage> {
                     style: TextStyle(fontSize: 10.0, color: isSender ? Colors.white70 : Colors.black54),
                   ),
                 ],
+                
               ),
             ),
           ),

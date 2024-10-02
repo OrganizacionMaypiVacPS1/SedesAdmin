@@ -3,11 +3,10 @@
 /// Nombre del desarrollador: Equipo-Sedes-Univalle
 /// Fecha de creación: 18/08/2023
 /// </summary>
-/// 
+///
 // <copyright file="main.dart" company="Sedes-Univalle">
 // Esta clase está restringida para su uso, sin la previa autorización de Sedes-Univalle.
 // </copyright>
-
 
 //import 'dart:js';
 
@@ -30,32 +29,27 @@ void main() async {
   //  print('MyApp: $message');
   //});
 
-  runApp(
-
-    MultiProvider(providers: [
-      Provider<LocalNotificationService>(create: (context) => LocalNotificationService()),
+  runApp(MultiProvider(
+    providers: [
+      Provider<LocalNotificationService>(
+          create: (context) => LocalNotificationService()),
       //Provider<PushNotificationService>(create: (context) => PushNotificationService(),)
     ],
-    child: const MainApp(),)
-    );
+    child: const MainApp(),
+  ));
 }
-
 
 class MainApp extends StatelessWidget {
   const MainApp({Key? key}) : super(key: key);
-  
-  
-  @override
 
-  Widget build(BuildContext  context) {
-    return  MaterialApp(
-        debugShowCheckedModeBanner: false,
-        initialRoute: '/home',
-        routes: {
-          '/home': (context) => const SplashScreen(),
-        },
-      );
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      initialRoute: '/home',
+      routes: {
+        '/home': (context) => const SplashScreen(),
+      },
+    );
   }
 }
-
- 
